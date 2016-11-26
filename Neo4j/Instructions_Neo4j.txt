@@ -1,0 +1,15 @@
+Joke Recommender using Neo4j library:
+Steps to Install and use Neo4j:
+1) Install the community edition of Neo4j from their official website also listed below:
+   https://neo4j.com/download/
+   
+2) Run Neo4j Community Edition, set the database path and click on start.
+
+3) The windows shows the default localhost to open in order to access Neo4j i.e http://localhost:7474/. Open it in browser
+
+4) Set a new password as a first time user and type :server connect in the editor.
+
+5) Once connected, create a new directory called as import inside the database path and copy the dataset to that folder
+
+6) Run the code provided inside jokeRecommenderNeo4j.txt and view the output.
+
