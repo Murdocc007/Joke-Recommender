@@ -1,6 +1,6 @@
 import csv
 
-mycsv = csv.reader(open('./jester-data-2.csv'))
+mycsv = csv.reader(open('./combined.csv'))
 writer=csv.writer(open('./ratings.csv','wb'))
 writer.writerow(['UserID','MovieID','Rating'])
 for row in mycsv:
