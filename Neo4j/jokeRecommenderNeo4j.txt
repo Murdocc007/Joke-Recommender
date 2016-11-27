@@ -1,6 +1,7 @@
 // Step 1
-USING PERIODIC COMMIT 15000
+USING PERIODIC COMMIT 1000
 LOAD CSV WITH HEADERS FROM "file:///ratings.csv" AS line WITH line
+LIMIT 10000
 WHERE line.Rating <> "99"
 MERGE (m:User {userId:line.UserID})
 MERGE (j:Joke{jokeId:line.JokeID})
@@ -8,19 +9,19 @@ CREATE (m)-[r:RATED {Rating:line.Rating}]->(j)
 RETURN m,r,j;
 
 // Step 2
-MATCH (user1:User{userId : '50'})-[r1:RATED]-> (j:Joke)<-[r2:RATED]-(user2:User)
+MATCH (user1:User{userId : '1'})-[r1:RATED]-> (j:Joke)<-[r2:RATED]-(user2:User)
 WITH user1.userId AS user1Id, user2.userId AS user2Id, user1, user2,count(j) AS commonJokes,
 
 // Step 3
 collect((toInt(r1.Rating)-toInt(r2.Rating))^2) AS ratings,collect(j.jokeId) AS JokeIDs
 WITH commonJokes, JokeIDs, user1, user2, ratings
-MERGE (user1)-[s:Similarity]->(user2) SET s.similarity = 1-(SQRT(reduce(sum=0.0, k in extract(r in ratings | r/commonJokes) | sum+k))/4);
+MERGE (user1)-[s:Similarity]->(user2) SET s.similarity = 1-(SQRT(reduce(sum=0.0, k in extract(r in ratings | r/commonJokes) | sum+k))/20);
 
 // Step 4
-MATCH (user1:User)-[r:RATED]->(j:Joke),(user1)<-[s:Similarity]-(user2:User {userId:'50'})
+MATCH (user1:User)-[r:RATED]->(j:Joke),(user1)<-[s:Similarity]-(user2:User {userId:'1'})
 WHERE NOT ((user2)-[:RATED]->(j))
 WITH j, r.Rating AS rating,s.similarity as similarity
-WHERE similarity > -0.25
+WHERE similarity > 0.6
 
 // Step 5
 WITH j, COLLECT(rating) AS ratingCollection, COLLECT(similarity) AS similarityCollection
@@ -29,5 +30,5 @@ j,similarityCollection, REDUCE(num = 0, s IN ratingCollection | toInt(num)+toInt
 
 // Step 6
 ORDER BY LENGTH(ratingCollection) DESC, avgRating DESC, avgSimilarity DESC
-WHERE avgRating >4
+WHERE avgRating >2
 RETURN j AS Joke, avgRating AS Recommendation
