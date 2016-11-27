@@ -25,10 +25,12 @@ WHERE similarity > 0.6
 
 // Step 5
 WITH j, COLLECT(rating) AS ratingCollection, COLLECT(similarity) AS similarityCollection
+
+// Step 6
 WITH REDUCE(num = 0, s IN similarityCollection | toInt(num)+toInt(s))*1.0 / LENGTH(similarityCollection) AS avgSimilarity,
 j,similarityCollection, REDUCE(num = 0, s IN ratingCollection | toInt(num)+toInt(s))*1.0 / LENGTH(similarityCollection) AS avgRating, ratingCollection
 
-// Step 6
+// Step 7
 ORDER BY LENGTH(ratingCollection) DESC, avgRating DESC, avgSimilarity DESC
 WHERE avgRating >2
 RETURN j AS Joke, avgRating AS Recommendation
